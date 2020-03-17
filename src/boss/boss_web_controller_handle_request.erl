@@ -149,12 +149,19 @@ build_dynamic_response(App, Bridge, Url, RouterAdapter) ->
     ErrorArgs        = [RequestMethod, FullUrl, App, StatusCode, Time div 1000],
     log_status_code(StatusCode, ErrorFormat, ErrorArgs),
     Response1        = Bridge:set_status_code(StatusCode),
+    CookieHeaders = [V || {K, V} <- Headers, K == "Set-Cookie"],
+    NoCookieHeaders = [{K,V} || {K, V} <- Headers, K =/= "Set-Cookie"],
     Response2        = lists:foldl(fun({K, V}, Acc) ->
                           Acc:set_header(K, V)
                       end,
                       Response1,
-                      Headers),
-    handle_response(Response2, Payload, RequestMethod).
+                      NoCookieHeaders),
+    Response3        = lists:foldl(fun({K, V, O}, Acc) ->
+                                           sbw:set_cookie(K, V, O, Acc)
+                                   end,
+                                   Response2,
+                                   CookieHeaders),
+    handle_response(Response3, Payload, RequestMethod).
 
 set_timer(Request, Url, Mode, AppInfo, TranslatorPid, RouterPid,
           ControllerList, RouterAdapter) ->
@@ -345,7 +352,7 @@ add_session_to_headers(Req, Headers, SessionID) ->
                         {http_only, boss_env:get_env(session_cookie_http_only, true)}
                        ],
     SessionKey        = boss_session:get_session_key(),
-    lists:merge(Headers, [mochiweb_cookies:cookie(SessionKey, SessionID, CookieOptions)]).
+    lists:merge(Headers, [{"Set-Cookie", {SessionKey, SessionID, CookieOptions}}]).
 
 
 %TODO: Refactor this
