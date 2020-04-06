@@ -27,7 +27,7 @@ case erlang:function_exported(rebar3, main, 1) of
         %{webmachine,            ".*",   {git, "https://github.com/webmachine/webmachine.git",      {tag, "086bd10920"}}},
         %% yaws requires libpam0g-dev, for ubuntu install it with 'sudo apt-get install libpam0g-dev'
         %{yaws,                  ".*",   {git, "https://github.com/klacke/yaws.git",                {tag, "yaws-2.0"}}},
-        {simple_bridge,         ".*",   {git, "https://github.com/nitrogen/simple_bridge.git",      {tag, "1938ec7"}}}
+        {simple_bridge,         ".*",   {git, "https://github.com/nitrogen/simple_bridge.git",      {tag, "2d0dedbd17"}}}
 
         %%% EXPERIMENTAL %%%
         %% Uncomment the following line if you want LFE support
